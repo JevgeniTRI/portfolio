@@ -12,3 +12,7 @@ export const login = async (username, password) => {
     });
     return response.data;
 };
+export const verifyToken = async () => {
+    const response = await api.get('/auth/verify');
+    return response.data;
+};

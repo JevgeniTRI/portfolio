@@ -7,9 +7,35 @@ import Admin from './pages/Admin';
 import Login from './pages/Login';
 import Contact from './pages/Contact';
 
+import { useState, useEffect } from 'react';
+import { verifyToken } from './api/auth';
+
 const RequireAuth = ({ children }) => {
-  const token = localStorage.getItem('token');
-  if (!token) {
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
+  const token = sessionStorage.getItem('token');
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      if (!token) {
+        setIsAuthenticated(false);
+        return;
+      }
+      try {
+        await verifyToken();
+        setIsAuthenticated(true);
+      } catch (error) {
+        sessionStorage.removeItem('token');
+        setIsAuthenticated(false);
+      }
+    };
+    checkAuth();
+  }, [token]);
+
+  if (isAuthenticated === null) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>; // Or a proper spinner
+  }
+
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
   return children;

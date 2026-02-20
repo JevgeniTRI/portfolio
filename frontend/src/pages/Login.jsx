@@ -15,7 +15,7 @@ const Login = () => {
         setError('');
         try {
             const data = await login(username, password);
-            localStorage.setItem('token', data.access_token);
+            sessionStorage.setItem('token', data.access_token);
             navigate('/admin');
         } catch (err) {
             setError(t('login.invalid'));

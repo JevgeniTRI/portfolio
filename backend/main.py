@@ -97,6 +97,10 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
+@app.get("/auth/verify")
+def verify_token(current_user: models.User = Depends(auth.get_current_user)):
+    return {"status": "ok", "user": current_user.username}
+
 @app.get("/projects/", response_model=List[schemas.Project])
 def read_projects(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     projects = crud.get_projects(db, skip=skip, limit=limit)

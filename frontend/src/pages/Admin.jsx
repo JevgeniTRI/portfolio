@@ -18,7 +18,7 @@ const Admin = () => {
     const { t } = useLanguage();
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         if (!token) {
             navigate('/login');
             return;
@@ -94,7 +94,7 @@ const Admin = () => {
                 </div>
                 <button
                     onClick={() => {
-                        localStorage.removeItem('token');
+                        sessionStorage.removeItem('token');
                         navigate('/login');
                     }}
                     className="bg-white text-slate-600 hover:text-red-600 hover:bg-red-50 px-5 py-2.5 rounded-lg border border-slate-200 transition-colors font-medium shadow-sm"
