@@ -57,7 +57,7 @@ app.mount("/media", StaticFiles(directory="media"), name="media")
 from fastapi import File, UploadFile
 import uuid
 
-ALLOWED_UPLOAD_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg"}
+ALLOWED_UPLOAD_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg", ".pdf"}
 MAX_UPLOAD_BYTES = int(os.getenv("MAX_UPLOAD_BYTES", 5 * 1024 * 1024))
 UPLOAD_CHUNK_SIZE = 1024 * 1024
 

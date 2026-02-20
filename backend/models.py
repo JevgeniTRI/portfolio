@@ -26,4 +26,5 @@ class CV(Base):
     about = Column(Text, default="")
     experience = Column(Text, default="")
     education = Column(Text, default="")
-    skills = Column(Text, default="")
+    photo_url = Column(String, default="")
+    skills = Column(JSON, default=list)  # Storing skills as a list of dicts

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getProjects, createProject, deleteProject, updateProject } from '../api/projects';
 import { useLanguage } from '../context/LanguageContext';
 import ImageUpload from '../components/ImageUpload';
+import FileUpload from '../components/FileUpload';
 import { getCV, updateCV } from '../api/cv';
 
 const Admin = () => {
@@ -19,7 +20,8 @@ const Admin = () => {
         about: '',
         experience: '',
         education: '',
-        skills: ''
+        photo_url: '',
+        skills: []
     });
     const [editingId, setEditingId] = useState(null);
     const navigate = useNavigate();
@@ -112,6 +114,24 @@ const Admin = () => {
             console.error("Failed to update CV", error);
             alert("Failed to update CV");
         }
+    };
+
+    const addSkill = () => {
+        setCvData({
+            ...cvData,
+            skills: [...cvData.skills, { name: '', level: 'Beginner', certificate_url: '', description: '' }]
+        });
+    };
+
+    const updateSkill = (index, field, value) => {
+        const newSkills = [...cvData.skills];
+        newSkills[index][field] = value;
+        setCvData({ ...cvData, skills: newSkills });
+    };
+
+    const removeSkill = (index) => {
+        const newSkills = cvData.skills.filter((_, i) => i !== index);
+        setCvData({ ...cvData, skills: newSkills });
     };
 
     return (
@@ -262,16 +282,30 @@ const Admin = () => {
                 </div>
             ) : (
                 <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-xl max-w-4xl">
-                    <h2 className="text-2xl font-bold mb-6 text-slate-900 border-b border-slate-100 pb-4">Edit CV</h2>
-                    <form onSubmit={handleCVSubmit} className="space-y-6">
-                        <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-1">About</label>
-                            <textarea
-                                value={cvData.about}
-                                onChange={e => setCvData({ ...cvData, about: e.target.value })}
-                                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-900 h-32 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                            />
+                    <h2 className="text-2xl font-bold mb-8 text-slate-900 border-b border-slate-100 pb-4">Edit CV</h2>
+                    <form onSubmit={handleCVSubmit} className="space-y-8">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div className="md:col-span-1">
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">Profile Photo</label>
+                                <FileUpload
+                                    value={cvData.photo_url}
+                                    onChange={(url) => setCvData({ ...cvData, photo_url: url })}
+                                    accept={{ 'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif'] }}
+                                    label=""
+                                />
+                            </div>
+                            <div className="md:col-span-2 space-y-6">
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-1">About</label>
+                                    <textarea
+                                        value={cvData.about}
+                                        onChange={e => setCvData({ ...cvData, about: e.target.value })}
+                                        className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-900 h-32 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                                    />
+                                </div>
+                            </div>
                         </div>
+
                         <div>
                             <label className="block text-sm font-semibold text-slate-700 mb-1">Experience</label>
                             <textarea
@@ -288,19 +322,89 @@ const Admin = () => {
                                 className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-900 h-32 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                             />
                         </div>
-                        <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-1">Skills</label>
-                            <textarea
-                                value={cvData.skills}
-                                onChange={e => setCvData({ ...cvData, skills: e.target.value })}
-                                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-900 h-32 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                            />
+
+                        {/* Dynamic Skills Section */}
+                        <div className="border border-slate-200 rounded-xl p-6 bg-slate-50">
+                            <div className="flex justify-between items-center mb-6 border-b border-slate-200 pb-4">
+                                <label className="block text-lg font-bold text-slate-900">Skills & Certificates</label>
+                                <button
+                                    type="button"
+                                    onClick={addSkill}
+                                    className="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-4 py-2 rounded-lg transition-colors text-sm font-bold"
+                                >
+                                    + Add Skill
+                                </button>
+                            </div>
+
+                            <div className="space-y-6">
+                                {Array.isArray(cvData.skills) && cvData.skills.map((skill, index) => (
+                                    <div key={index} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative">
+                                        <div className="md:col-span-12 grid grid-cols-1 md:grid-cols-12 gap-4 items-end mb-2">
+                                            <div className="md:col-span-4">
+                                                <label className="block text-xs font-semibold text-slate-500 mb-1">Skill Name</label>
+                                                <input
+                                                    type="text"
+                                                    value={skill.name}
+                                                    onChange={e => updateSkill(index, 'name', e.target.value)}
+                                                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    placeholder="e.g. React.js"
+                                                />
+                                            </div>
+                                            <div className="md:col-span-3">
+                                                <label className="block text-xs font-semibold text-slate-500 mb-1">Level</label>
+                                                <select
+                                                    value={skill.level}
+                                                    onChange={e => updateSkill(index, 'level', e.target.value)}
+                                                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                                                >
+                                                    <option value="Beginner">Beginner</option>
+                                                    <option value="Intermediate">Intermediate</option>
+                                                    <option value="Advanced">Advanced</option>
+                                                    <option value="Expert">Expert</option>
+                                                </select>
+                                            </div>
+                                            <div className="md:col-span-4">
+                                                <FileUpload
+                                                    value={skill.certificate_url}
+                                                    onChange={(url) => updateSkill(index, 'certificate_url', url)}
+                                                    accept={{ 'application/pdf': ['.pdf'], 'image/*': ['.jpeg', '.jpg', '.png'] }}
+                                                    label="Certificate (PDF/Img)"
+                                                />
+                                            </div>
+                                            <div className="md:col-span-1 flex justify-center pb-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeSkill(index)}
+                                                    className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg transition-colors"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div className="md:col-span-12">
+                                            <label className="block text-xs font-semibold text-slate-500 mb-1">Description (Optional)</label>
+                                            <textarea
+                                                value={skill.description || ''}
+                                                onChange={e => updateSkill(index, 'description', e.target.value)}
+                                                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 h-20 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all resize-y"
+                                                placeholder="Brief description of your real-world experience with this skill..."
+                                            />
+                                        </div>
+                                    </div>
+                                ))}
+                                {(!cvData.skills || cvData.skills.length === 0) && (
+                                    <div className="text-center py-6 text-slate-400">
+                                        No skills added yet. Click "+ Add Skill" to begin.
+                                    </div>
+                                )}
+                            </div>
                         </div>
+
                         <button
                             type="submit"
-                            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-lg flex-1"
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-xl transition-all shadow-xl hover:shadow-2xl shadow-blue-500/30 w-full text-lg mt-6"
                         >
-                            Save CV
+                            Save CV Changes
                         </button>
                     </form>
                 </div>

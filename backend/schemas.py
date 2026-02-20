@@ -31,7 +31,8 @@ class CVBase(BaseModel):
     about: str = ""
     experience: str = ""
     education: str = ""
-    skills: str = ""
+    photo_url: str = ""
+    skills: List[dict] = Field(default_factory=list)
 
 class CVCreate(CVBase):
     pass
