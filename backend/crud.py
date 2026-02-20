@@ -35,7 +35,7 @@ def get_cv(db: Session):
     cv = db.query(models.CV).first()
     if not cv:
         # Create an empty CV if none exists
-        cv = models.CV(about="", experience="", education="", skills="")
+        cv = models.CV(about="", experience="", education="", photo_url="", skills=[])
         db.add(cv)
         db.commit()
         db.refresh(cv)

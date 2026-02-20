@@ -23,3 +23,9 @@ Thumbs.db
 # Database
 *.db
 *.sqlite3
+
+# Uploaded media
+media/
+
+# Virtual environment
+.venv/

@@ -1,18 +1,11 @@
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+import api from './axios';
 
 export const getCV = async () => {
-    const response = await axios.get(`${API_URL}/cv`);
+    const response = await api.get('/cv');
     return response.data;
 };
 
 export const updateCV = async (cvData) => {
-    const token = sessionStorage.getItem('token');
-    const response = await axios.put(`${API_URL}/cv`, cvData, {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    });
+    const response = await api.put('/cv', cvData);
     return response.data;
 };
