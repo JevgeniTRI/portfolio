@@ -3,6 +3,7 @@ export const translations = {
         nav: {
             home: "Home",
             projects: "Projects",
+            cv: "CV",
             admin: "Admin",
             contact: "Contact"
         },
@@ -71,6 +72,7 @@ export const translations = {
         nav: {
             home: "Главная",
             projects: "Проекты",
+            cv: "CV",
             admin: "Админ",
             contact: "Контакты"
         },
@@ -139,6 +141,7 @@ export const translations = {
         nav: {
             home: "Avaleht",
             projects: "Projektid",
+            cv: "CV",
             admin: "Admin",
             contact: "Kontakt"
         },

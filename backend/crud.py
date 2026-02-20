@@ -30,3 +30,25 @@ def update_project(db: Session, project_id: int, project: schemas.ProjectCreate)
         db.commit()
         db.refresh(db_project)
     return db_project
+
+def get_cv(db: Session):
+    cv = db.query(models.CV).first()
+    if not cv:
+        # Create an empty CV if none exists
+        cv = models.CV(about="", experience="", education="", skills="")
+        db.add(cv)
+        db.commit()
+        db.refresh(cv)
+    return cv
+
+def update_cv(db: Session, cv: schemas.CVCreate):
+    db_cv = db.query(models.CV).first()
+    if not db_cv:
+        db_cv = models.CV(**cv.model_dump())
+        db.add(db_cv)
+    else:
+        for key, value in cv.model_dump().items():
+            setattr(db_cv, key, value)
+    db.commit()
+    db.refresh(db_cv)
+    return db_cv

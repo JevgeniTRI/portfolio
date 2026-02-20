@@ -159,3 +159,11 @@ def update_project(project_id: int, project: schemas.ProjectCreate, db: Session 
 def read_root():
     return {"message": "Welcome to DevPortfolio API"}
 
+
+@app.get("/cv", response_model=schemas.CV)
+def read_cv(db: Session = Depends(get_db)):
+    return crud.get_cv(db)
+
+@app.put("/cv", response_model=schemas.CV)
+def update_cv(cv: schemas.CVCreate, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
+    return crud.update_cv(db=db, cv=cv)

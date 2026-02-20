@@ -6,6 +6,7 @@ import ProjectDetails from './pages/ProjectDetails';
 import Admin from './pages/Admin';
 import Login from './pages/Login';
 import Contact from './pages/Contact';
+import CV from './pages/CV';
 
 import { useState, useEffect } from 'react';
 import { verifyToken } from './api/auth';
@@ -52,6 +53,7 @@ function App() {
           <Route path="/admin" element={<RequireAuth><Admin /></RequireAuth>} />
           <Route path="/login" element={<Login />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/cv" element={<CV />} />
         </Routes>
       </Layout>
     </Router>

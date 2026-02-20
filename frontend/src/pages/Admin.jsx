@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { getProjects, createProject, deleteProject, updateProject } from '../api/projects';
 import { useLanguage } from '../context/LanguageContext';
 import ImageUpload from '../components/ImageUpload';
+import { getCV, updateCV } from '../api/cv';
 
 const Admin = () => {
+    const [activeTab, setActiveTab] = useState('projects'); // 'projects' or 'cv'
     const [projects, setProjects] = useState([]);
     const [formData, setFormData] = useState({
         title: '',
@@ -12,6 +14,12 @@ const Admin = () => {
         github_link: '',
         images: [],
         tags: ''
+    });
+    const [cvData, setCvData] = useState({
+        about: '',
+        experience: '',
+        education: '',
+        skills: ''
     });
     const [editingId, setEditingId] = useState(null);
     const navigate = useNavigate();
@@ -24,7 +32,17 @@ const Admin = () => {
             return;
         }
         fetchProjects();
+        fetchCV();
     }, [navigate]);
+
+    const fetchCV = async () => {
+        try {
+            const data = await getCV();
+            setCvData(data);
+        } catch (error) {
+            console.error("Failed to fetch CV", error);
+        }
+    };
 
     const fetchProjects = async () => {
         try {
@@ -85,6 +103,17 @@ const Admin = () => {
         }
     };
 
+    const handleCVSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            await updateCV(cvData);
+            alert("CV updated successfully!");
+        } catch (error) {
+            console.error("Failed to update CV", error);
+            alert("Failed to update CV");
+        }
+    };
+
     return (
         <div className="container mx-auto px-6 py-12">
             <div className="flex justify-between items-center mb-10">
@@ -103,115 +132,179 @@ const Admin = () => {
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                {/* Create/Edit Project Form */}
-                <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-xl h-fit">
-                    <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
-                        <h2 className="text-2xl font-bold text-slate-900">
-                            {editingId ? t('admin.editProject') : t('admin.addProject')}
-                        </h2>
-                        {editingId && (
-                            <button
-                                onClick={handleCancelEdit}
-                                className="text-sm text-slate-500 hover:text-slate-700 underline"
-                            >
-                                {t('admin.cancel')}
-                            </button>
-                        )}
-                    </div>
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-1">{t('admin.form.title')}</label>
-                            <input
-                                type="text"
-                                value={formData.title}
-                                onChange={e => setFormData({ ...formData, title: e.target.value })}
-                                required
-                                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                placeholder={t('admin.form.title')}
-                            />
+            {/* Tabs */}
+            <div className="mb-8 border-b border-slate-200">
+                <nav className="-mb-px flex space-x-8">
+                    <button
+                        onClick={() => setActiveTab('projects')}
+                        className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === 'projects' ? 'border-blue-500 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}`}
+                    >
+                        {t('nav.projects')}
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('cv')}
+                        className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === 'cv' ? 'border-blue-500 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}`}
+                    >
+                        CV
+                    </button>
+                </nav>
+            </div>
+
+            {activeTab === 'projects' ? (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    {/* Create/Edit Project Form */}
+                    <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-xl h-fit">
+                        <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
+                            <h2 className="text-2xl font-bold text-slate-900">
+                                {editingId ? t('admin.editProject') : t('admin.addProject')}
+                            </h2>
+                            {editingId && (
+                                <button
+                                    onClick={handleCancelEdit}
+                                    className="text-sm text-slate-500 hover:text-slate-700 underline"
+                                >
+                                    {t('admin.cancel')}
+                                </button>
+                            )}
                         </div>
-                        <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-1">{t('admin.form.description')}</label>
-                            <textarea
-                                value={formData.description}
-                                onChange={e => setFormData({ ...formData, description: e.target.value })}
-                                required
-                                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-900 h-32 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
-                                placeholder={t('admin.form.description')}
-                            />
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <form onSubmit={handleSubmit} className="space-y-5">
                             <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-1">{t('admin.form.github')}</label>
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">{t('admin.form.title')}</label>
                                 <input
-                                    type="url"
-                                    value={formData.github_link}
-                                    onChange={e => setFormData({ ...formData, github_link: e.target.value })}
+                                    type="text"
+                                    value={formData.title}
+                                    onChange={e => setFormData({ ...formData, title: e.target.value })}
+                                    required
                                     className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                    placeholder="https://github.com/..."
+                                    placeholder={t('admin.form.title')}
                                 />
                             </div>
-                            <div className="col-span-2">
-                                <ImageUpload
-                                    value={formData.images}
-                                    onChange={(images) => setFormData({ ...formData, images: images })}
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">{t('admin.form.description')}</label>
+                                <textarea
+                                    value={formData.description}
+                                    onChange={e => setFormData({ ...formData, description: e.target.value })}
+                                    required
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-900 h-32 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                                    placeholder={t('admin.form.description')}
                                 />
                             </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-1">{t('admin.form.github')}</label>
+                                    <input
+                                        type="url"
+                                        value={formData.github_link}
+                                        onChange={e => setFormData({ ...formData, github_link: e.target.value })}
+                                        className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                        placeholder="https://github.com/..."
+                                    />
+                                </div>
+                                <div className="col-span-2">
+                                    <ImageUpload
+                                        value={formData.images}
+                                        onChange={(images) => setFormData({ ...formData, images: images })}
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">{t('admin.form.tags')}</label>
+                                <input
+                                    type="text"
+                                    value={formData.tags}
+                                    onChange={e => setFormData({ ...formData, tags: e.target.value })}
+                                    placeholder="React, Python, FastAPI"
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                />
+                            </div>
+                            <button
+                                type="submit"
+                                className={`w-full font-bold py-3 rounded-xl transition-all shadow-lg transform active:scale-95 mt-4 ${editingId ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/30' : 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-500/30'}`}
+                            >
+                                {editingId ? t('admin.updateProject') : t('admin.form.create')}
+                            </button>
+                        </form>
+                    </div>
+
+                    {/* Existing Projects List */}
+                    <div>
+                        <h2 className="text-2xl font-bold mb-6 text-slate-900 border-b border-slate-100 pb-4">{t('admin.manageProjects')}</h2>
+                        <div className="space-y-4">
+                            {projects.map(project => (
+                                <div key={project.id} className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 group hover:shadow-md transition-shadow">
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="font-bold text-lg text-slate-900 truncate">{project.title}</h3>
+                                        <p className="text-slate-500 text-sm truncate">{project.description}</p>
+                                    </div>
+                                    <div className="flex space-x-3 shrink-0">
+                                        <button
+                                            onClick={() => handleEdit(project)}
+                                            className="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-800 px-4 py-2 rounded-lg transition-colors text-sm font-medium"
+                                        >
+                                            {t('admin.edit')}
+                                        </button>
+                                        <button
+                                            onClick={() => handleDelete(project.id)}
+                                            className="bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-700 px-4 py-2 rounded-lg transition-colors text-sm font-medium"
+                                        >
+                                            {t('projects.delete')}
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                            {projects.length === 0 && (
+                                <div className="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                                    <p className="text-slate-400">{t('projects.noProjects')}</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-xl max-w-4xl">
+                    <h2 className="text-2xl font-bold mb-6 text-slate-900 border-b border-slate-100 pb-4">Edit CV</h2>
+                    <form onSubmit={handleCVSubmit} className="space-y-6">
+                        <div>
+                            <label className="block text-sm font-semibold text-slate-700 mb-1">About</label>
+                            <textarea
+                                value={cvData.about}
+                                onChange={e => setCvData({ ...cvData, about: e.target.value })}
+                                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-900 h-32 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                            />
                         </div>
                         <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-1">{t('admin.form.tags')}</label>
-                            <input
-                                type="text"
-                                value={formData.tags}
-                                onChange={e => setFormData({ ...formData, tags: e.target.value })}
-                                placeholder="React, Python, FastAPI"
-                                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            <label className="block text-sm font-semibold text-slate-700 mb-1">Experience</label>
+                            <textarea
+                                value={cvData.experience}
+                                onChange={e => setCvData({ ...cvData, experience: e.target.value })}
+                                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-900 h-40 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-slate-700 mb-1">Education</label>
+                            <textarea
+                                value={cvData.education}
+                                onChange={e => setCvData({ ...cvData, education: e.target.value })}
+                                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-900 h-32 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-slate-700 mb-1">Skills</label>
+                            <textarea
+                                value={cvData.skills}
+                                onChange={e => setCvData({ ...cvData, skills: e.target.value })}
+                                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-900 h-32 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                             />
                         </div>
                         <button
                             type="submit"
-                            className={`w-full font-bold py-3 rounded-xl transition-all shadow-lg transform active:scale-95 mt-4 ${editingId ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/30' : 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-500/30'}`}
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-lg flex-1"
                         >
-                            {editingId ? t('admin.updateProject') : t('admin.form.create')}
+                            Save CV
                         </button>
                     </form>
                 </div>
-
-                {/* Existing Projects List */}
-                <div>
-                    <h2 className="text-2xl font-bold mb-6 text-slate-900 border-b border-slate-100 pb-4">{t('admin.manageProjects')}</h2>
-                    <div className="space-y-4">
-                        {projects.map(project => (
-                            <div key={project.id} className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 group hover:shadow-md transition-shadow">
-                                <div className="flex-1 min-w-0">
-                                    <h3 className="font-bold text-lg text-slate-900 truncate">{project.title}</h3>
-                                    <p className="text-slate-500 text-sm truncate">{project.description}</p>
-                                </div>
-                                <div className="flex space-x-3 shrink-0">
-                                    <button
-                                        onClick={() => handleEdit(project)}
-                                        className="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-800 px-4 py-2 rounded-lg transition-colors text-sm font-medium"
-                                    >
-                                        {t('admin.edit')}
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(project.id)}
-                                        className="bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-700 px-4 py-2 rounded-lg transition-colors text-sm font-medium"
-                                    >
-                                        {t('projects.delete')}
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                        {projects.length === 0 && (
-                            <div className="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-200">
-                                <p className="text-slate-400">{t('projects.noProjects')}</p>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
+            )}
         </div>
     );
 };

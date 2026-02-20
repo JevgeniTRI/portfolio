@@ -26,3 +26,18 @@ class TokenData(BaseModel):
 
 class User(BaseModel):
     username: str
+
+class CVBase(BaseModel):
+    about: str = ""
+    experience: str = ""
+    education: str = ""
+    skills: str = ""
+
+class CVCreate(CVBase):
+    pass
+
+class CV(CVBase):
+    id: int
+
+    class Config:
+        from_attributes = True
