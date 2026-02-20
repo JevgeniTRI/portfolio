@@ -80,6 +80,7 @@ const ProjectDetails = () => {
                             src={displayImages[currentImageIndex]}
                             alt={project.title}
                             className="w-full h-full object-contain p-8"
+                            loading="lazy"
                         />
 
                         {displayImages.length > 1 && (

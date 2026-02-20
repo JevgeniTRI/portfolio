@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -6,18 +7,35 @@ from sqlalchemy.orm import Session
 from typing import List
 from datetime import timedelta
 import models, schemas, crud, auth
-from database import engine, get_db
+from database import engine, get_db, SessionLocal
 
 # Create tables
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="DevPortfolio API")
-
-# CORS setup
 import os
 from dotenv import load_dotenv
-
 load_dotenv()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: Create initial admin user if not exists
+    db = SessionLocal()
+    try:
+        admin_username = os.getenv("ADMIN_USERNAME", "admin")
+        admin_password = os.getenv("ADMIN_PASSWORD", "admin123")
+        admin = db.query(models.User).filter(models.User.username == admin_username).first()
+        if not admin:
+            hashed_password = auth.get_password_hash(admin_password)
+            db_user = models.User(username=admin_username, hashed_password=hashed_password)
+            db.add(db_user)
+            db.commit()
+    finally:
+        db.close()
+    yield  # App runs here
+
+app = FastAPI(title="DevPortfolio API", lifespan=lifespan)
+
+# CORS setup
 
 origins = [
     os.getenv("FRONTEND_URL", "http://localhost:5173"),
@@ -44,7 +62,7 @@ MAX_UPLOAD_BYTES = int(os.getenv("MAX_UPLOAD_BYTES", 5 * 1024 * 1024))
 UPLOAD_CHUNK_SIZE = 1024 * 1024
 
 @app.post("/upload")
-async def upload_file(file: UploadFile = File(...)):
+async def upload_file(file: UploadFile = File(...), current_user: models.User = Depends(auth.get_current_user)):
     if not file.filename:
         raise HTTPException(status_code=400, detail="Filename is required")
 
@@ -140,22 +158,4 @@ def update_project(project_id: int, project: schemas.ProjectCreate, db: Session 
 @app.get("/")
 def read_root():
     return {"message": "Welcome to DevPortfolio API"}
-
-# Create initial admin user if not exists (FOR DEMO/DEV ONLY)
-@app.on_event("startup")
-def startup_event():
-    from database import SessionLocal
-    db = SessionLocal()
-    try:
-        admin_username = os.getenv("ADMIN_USERNAME", "admin")
-        admin_password = os.getenv("ADMIN_PASSWORD", "admin123")
-        
-        admin = db.query(models.User).filter(models.User.username == admin_username).first()
-        if not admin:
-            hashed_password = auth.get_password_hash(admin_password)
-            db_user = models.User(username=admin_username, hashed_password=hashed_password)
-            db.add(db_user)
-            db.commit()
-    finally:
-        db.close()
 

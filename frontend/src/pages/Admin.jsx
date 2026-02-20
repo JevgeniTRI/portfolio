@@ -74,7 +74,7 @@ const Admin = () => {
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to delete this project?")) {
+        if (window.confirm(t('admin.confirmDelete'))) {
             try {
                 await deleteProject(id);
                 fetchProjects();
@@ -108,14 +108,14 @@ const Admin = () => {
                 <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-xl h-fit">
                     <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
                         <h2 className="text-2xl font-bold text-slate-900">
-                            {editingId ? 'Edit Project' : t('admin.addProject')}
+                            {editingId ? t('admin.editProject') : t('admin.addProject')}
                         </h2>
                         {editingId && (
                             <button
                                 onClick={handleCancelEdit}
                                 className="text-sm text-slate-500 hover:text-slate-700 underline"
                             >
-                                Cancel
+                                {t('admin.cancel')}
                             </button>
                         )}
                     </div>
@@ -173,7 +173,7 @@ const Admin = () => {
                             type="submit"
                             className={`w-full font-bold py-3 rounded-xl transition-all shadow-lg transform active:scale-95 mt-4 ${editingId ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/30' : 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-500/30'}`}
                         >
-                            {editingId ? 'Update Project' : t('admin.form.create')}
+                            {editingId ? t('admin.updateProject') : t('admin.form.create')}
                         </button>
                     </form>
                 </div>
@@ -193,7 +193,7 @@ const Admin = () => {
                                         onClick={() => handleEdit(project)}
                                         className="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-800 px-4 py-2 rounded-lg transition-colors text-sm font-medium"
                                     >
-                                        Edit
+                                        {t('admin.edit')}
                                     </button>
                                     <button
                                         onClick={() => handleDelete(project.id)}

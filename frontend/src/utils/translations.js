@@ -37,6 +37,11 @@ export const translations = {
             signOut: "Sign Out",
             addProject: "Add Project",
             manageProjects: "Manage Projects",
+            editProject: "Edit Project",
+            updateProject: "Update Project",
+            cancel: "Cancel",
+            confirmDelete: "Are you sure you want to delete this project?",
+            edit: "Edit",
             form: {
                 title: "Title",
                 description: "Description",
@@ -45,6 +50,13 @@ export const translations = {
                 tags: "Tags (comma separated)",
                 create: "Create Project"
             }
+        },
+        imageUpload: {
+            label: "Project Images",
+            dropHere: "Drop images here...",
+            clickOrDrag: "Click or drag images here",
+            supportedFormats: "Support JPG, PNG, WEBP, GIF",
+            uploading: "Uploading..."
         },
         login: {
             welcome: "Welcome Back",
@@ -93,6 +105,11 @@ export const translations = {
             signOut: "Выйти",
             addProject: "Добавить проект",
             manageProjects: "Список проектов",
+            editProject: "Редактировать проект",
+            updateProject: "Обновить проект",
+            cancel: "Отмена",
+            confirmDelete: "Вы уверены, что хотите удалить этот проект?",
+            edit: "Редактировать",
             form: {
                 title: "Название",
                 description: "Описание",
@@ -101,6 +118,13 @@ export const translations = {
                 tags: "Теги (через запятую)",
                 create: "Создать"
             }
+        },
+        imageUpload: {
+            label: "Изображения проекта",
+            dropHere: "Перетащите изображения сюда...",
+            clickOrDrag: "Нажмите или перетащите изображения сюда",
+            supportedFormats: "Поддерживаются JPG, PNG, WEBP, GIF",
+            uploading: "Загрузка..."
         },
         login: {
             welcome: "С возвращением",
@@ -149,6 +173,11 @@ export const translations = {
             signOut: "Logi välja",
             addProject: "Lisa Projekt",
             manageProjects: "Halda Projekte",
+            editProject: "Muuda Projekti",
+            updateProject: "Uuenda Projekti",
+            cancel: "Tühista",
+            confirmDelete: "Kas olete kindel, et soovite selle projekti kustutada?",
+            edit: "Muuda",
             form: {
                 title: "Pealkiri",
                 description: "Kirjeldus",
@@ -157,6 +186,13 @@ export const translations = {
                 tags: "Sildid (komadega eraldatud)",
                 create: "Loo Projekt"
             }
+        },
+        imageUpload: {
+            label: "Projekti pildid",
+            dropHere: "Lohistage pildid siia...",
+            clickOrDrag: "Klõpsake või lohistage pildid siia",
+            supportedFormats: "Toetatud JPG, PNG, WEBP, GIF",
+            uploading: "Üleslaadimine..."
         },
         login: {
             welcome: "Tere tulemast tagasi",

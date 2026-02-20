@@ -1,10 +1,12 @@
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { FaCloudUploadAlt, FaTrash } from 'react-icons/fa';
+import { useLanguage } from '../context/LanguageContext';
 
 const ImageUpload = ({ value = [], onChange }) => {
     const [uploading, setUploading] = useState(false);
     const [progress, setProgress] = useState(0);
+    const { t } = useLanguage();
     const maxUploadBytes = Number(import.meta.env.VITE_MAX_UPLOAD_BYTES) || 5 * 1024 * 1024;
     const maxUploadMb = Math.round(maxUploadBytes / (1024 * 1024));
 
@@ -22,7 +24,7 @@ const ImageUpload = ({ value = [], onChange }) => {
         let completed = 0;
 
         try {
-            const token = localStorage.getItem('token');
+            const token = sessionStorage.getItem('token');
 
             // Upload files sequentially
             for (const file of acceptedFiles) {
@@ -75,7 +77,7 @@ const ImageUpload = ({ value = [], onChange }) => {
 
     return (
         <div className="w-full space-y-4">
-            <label className="block text-sm font-semibold text-slate-700">Project Images</label>
+            <label className="block text-sm font-semibold text-slate-700">{t('imageUpload.label')}</label>
 
             {/* Image Grid */}
             {value && value.length > 0 && (
@@ -115,7 +117,7 @@ const ImageUpload = ({ value = [], onChange }) => {
                     {uploading ? (
                         <>
                             <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-600"></div>
-                            <p className="text-sm text-slate-600 font-medium">Uploading... {progress}%</p>
+                            <p className="text-sm text-slate-600 font-medium">{t('imageUpload.uploading')} {progress}%</p>
                         </>
                     ) : (
                         <>
@@ -124,10 +126,10 @@ const ImageUpload = ({ value = [], onChange }) => {
                             </div>
                             <div>
                                 <p className="text-sm font-medium text-slate-700">
-                                    {isDragActive ? 'Drop images here...' : 'Click or drag images here'}
+                                    {isDragActive ? t('imageUpload.dropHere') : t('imageUpload.clickOrDrag')}
                                 </p>
                                 <p className="text-xs text-slate-500 mt-1">
-                                    Support JPG, PNG, WEBP, GIF (Max {maxUploadMb}MB per file)
+                                    {t('imageUpload.supportedFormats')} (Max {maxUploadMb}MB)
                                 </p>
                             </div>
                         </>

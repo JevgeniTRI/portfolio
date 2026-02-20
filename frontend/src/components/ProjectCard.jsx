@@ -19,6 +19,7 @@ const ProjectCard = ({ project }) => {
                     src={(project.images && project.images.length > 0 ? project.images[0] : project.image_url) || "https://placehold.co/600x400/e2e8f0/475569?text=Project+Preview"}
                     alt={project.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    loading="lazy"
                 />
             </div>
             <div className="p-6 flex-grow flex flex-col">
