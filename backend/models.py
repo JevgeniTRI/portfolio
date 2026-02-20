@@ -1,0 +1,20 @@
+from sqlalchemy import Column, Integer, String, Text, JSON
+from database import Base
+
+class Project(Base):
+    __tablename__ = "projects"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, index=True)
+    description = Column(Text)
+    github_link = Column(String)
+
+    images = Column(JSON, default=list) # Storing list of image URLs
+    tags = Column(JSON, default=list) # Storing tags as a JSON list
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True)
+    hashed_password = Column(String)

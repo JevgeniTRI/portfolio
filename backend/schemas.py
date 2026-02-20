@@ -1,0 +1,28 @@
+from pydantic import BaseModel, Field
+from typing import List, Optional
+
+class ProjectBase(BaseModel):
+    title: str
+    description: str
+    github_link: Optional[str] = None
+    images: List[str] = Field(default_factory=list)
+    tags: List[str] = Field(default_factory=list)
+
+class ProjectCreate(ProjectBase):
+    pass
+
+class Project(ProjectBase):
+    id: int
+
+    class Config:
+        from_attributes = True
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    username: Optional[str] = None
+
+class User(BaseModel):
+    username: str
