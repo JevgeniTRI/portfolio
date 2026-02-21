@@ -37,10 +37,8 @@ app = FastAPI(title="DevPortfolio API", lifespan=lifespan)
 
 # CORS setup
 
-origins = [
-    os.getenv("FRONTEND_URL", "http://localhost:5173"),
-    "http://127.0.0.1:5173",
-]
+frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+origins = [o.strip() for o in frontend_url.split(",") if o.strip()]
 
 app.add_middleware(
     CORSMiddleware,
@@ -131,18 +129,13 @@ def read_project(project_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Project not found")
     return db_project
 
-import traceback
 
 @app.post("/projects/", response_model=schemas.Project)
 def create_project(project: schemas.ProjectCreate, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     try:
         return crud.create_project(db=db, project=project)
     except Exception as e:
-        print("------------- ERROR CREATING PROJECT -------------")
-        print(f"Error: {e}")
-        traceback.print_exc()
-        print("--------------------------------------------------")
-        raise e
+        raise HTTPException(status_code=500, detail="Failed to create project")
 
 @app.delete("/projects/{project_id}")
 def delete_project(project_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
