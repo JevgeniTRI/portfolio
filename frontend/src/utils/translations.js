@@ -18,7 +18,16 @@ export const translations = {
         contact: {
             title: "Contact",
             subtitle: "Have a project in mind? Let's talk.",
-            comingSoon: "Contact details coming soon."
+            comingSoon: "Contact details coming soon.",
+            form: {
+                name: "Your Name",
+                email: "Your Email",
+                message: "Your Message",
+                send: "Send Message",
+                sending: "Sending...",
+                success: "Message sent successfully!",
+                error: "Failed to send message. Please try again later."
+            }
         },
         techCheck: "Technologies I Use",
         projects: {
@@ -87,7 +96,16 @@ export const translations = {
         contact: {
             title: "Контакты",
             subtitle: "Есть проект? Давайте обсудим.",
-            comingSoon: "Контактные данные скоро появятся."
+            comingSoon: "Контактные данные скоро появятся.",
+            form: {
+                name: "Ваше имя",
+                email: "Ваш Email",
+                message: "Ваше сообщение",
+                send: "Отправить сообщение",
+                sending: "Отправка...",
+                success: "Сообщение успешно отправлено!",
+                error: "Не удалось отправить сообщение. Пожалуйста, попробуйте позже."
+            }
         },
         techCheck: "Технологии",
         projects: {
@@ -156,7 +174,16 @@ export const translations = {
         contact: {
             title: "Kontakt",
             subtitle: "On projekt mõttes? Võtame ühendust.",
-            comingSoon: "Kontaktandmed lisanduvad peagi."
+            comingSoon: "Kontaktandmed lisanduvad peagi.",
+            form: {
+                name: "Sinu Nimi",
+                email: "Sinu E-post",
+                message: "Sinu Sõnum",
+                send: "Saada Sõnum",
+                sending: "Saatmine...",
+                success: "Sõnum edukalt saadetud!",
+                error: "Sõnumi saatmine ebaõnnestus. Palun proovi hiljem uuesti."
+            }
         },
         techCheck: "Tehnoloogiad",
         projects: {

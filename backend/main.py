@@ -1,11 +1,13 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from typing import List
 from datetime import timedelta
+import smtplib
+from email.message import EmailMessage
 import models, schemas, crud, auth
 from database import engine, get_db, SessionLocal
 
@@ -169,3 +171,27 @@ def read_translations(db: Session = Depends(get_db)):
 def update_translations(data: schemas.TranslationBulkUpdate, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     crud.upsert_translations(db=db, language=data.language, translations=data.translations)
     return {"status": "ok"}
+
+def send_email_background(contact: schemas.ContactForm):
+    msg = EmailMessage()
+    msg.set_content(f"Name: {contact.name}\nEmail: {contact.email}\n\nMessage:\n{contact.message}")
+    msg["Subject"] = f"New Contact via Portfolio from {contact.name}"
+    msg["From"] = os.getenv("MAIL_USERNAME", "your_email@example.com")
+    msg["To"] = os.getenv("MAIL_USERNAME", "your_email@example.com")
+
+    try:
+        server = smtplib.SMTP(os.getenv("MAIL_SERVER", "smtp.gmail.com"), int(os.getenv("MAIL_PORT", 587)))
+        server.starttls()
+        # Ensure credentials are provided in .env
+        server.login(os.getenv("MAIL_USERNAME", ""), os.getenv("MAIL_PASSWORD", ""))
+        server.send_message(msg)
+        server.quit()
+    except Exception as e:
+        print(f"Failed to send email: {e}")
+        # In a real app we might log this to a file or sentry
+
+@app.post("/contact")
+async def contact_form(contact: schemas.ContactForm, background_tasks: BackgroundTasks):
+    background_tasks.add_task(send_email_background, contact)
+    return {"status": "ok", "message": "Message received"}
+

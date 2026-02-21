@@ -1,5 +1,10 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 from typing import List, Optional
+
+class ContactForm(BaseModel):
+    name: str
+    email: EmailStr
+    message: str
 
 class ProjectBase(BaseModel):
     title: str
