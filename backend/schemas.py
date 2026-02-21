@@ -42,3 +42,18 @@ class CV(CVBase):
 
     class Config:
         from_attributes = True
+
+class TranslationBase(BaseModel):
+    key: str
+    value: str
+
+class Translation(TranslationBase):
+    id: int
+    language: str
+
+    class Config:
+        from_attributes = True
+
+class TranslationBulkUpdate(BaseModel):
+    language: str
+    translations: dict[str, str]

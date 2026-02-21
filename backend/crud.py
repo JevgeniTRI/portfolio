@@ -52,3 +52,25 @@ def update_cv(db: Session, cv: schemas.CVCreate):
     db.commit()
     db.refresh(db_cv)
     return db_cv
+
+def get_translations(db: Session):
+    return db.query(models.Translation).all()
+
+def upsert_translations(db: Session, language: str, translations: dict):
+    # First, fetch existing translations for the language
+    existing_translations = db.query(models.Translation).filter(
+        models.Translation.language == language
+    ).all()
+    
+    existing_map = {t.key: t for t in existing_translations}
+
+    for key, value in translations.items():
+        if key in existing_map:
+            # Update
+            existing_map[key].value = value
+        else:
+            # Insert
+            new_translation = models.Translation(language=language, key=key, value=value)
+            db.add(new_translation)
+            
+    db.commit()

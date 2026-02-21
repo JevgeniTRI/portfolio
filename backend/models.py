@@ -28,3 +28,11 @@ class CV(Base):
     education = Column(Text, default="")
     photo_url = Column(String, default="")
     skills = Column(JSON, default=list)  # Storing skills as a list of dicts
+
+class Translation(Base):
+    __tablename__ = "translations"
+
+    id = Column(Integer, primary_key=True, index=True)
+    language = Column(String, index=True)
+    key = Column(String, index=True)
+    value = Column(Text)

@@ -5,9 +5,11 @@ import { useLanguage } from '../context/LanguageContext';
 import ImageUpload from '../components/ImageUpload';
 import FileUpload from '../components/FileUpload';
 import { getCV, updateCV } from '../api/cv';
+import { updateTranslations } from '../api/translations';
 
 const Admin = () => {
-    const [activeTab, setActiveTab] = useState('projects'); // 'projects' or 'cv'
+    const [activeTab, setActiveTab] = useState('projects'); // 'projects', 'cv', or 'pages'
+    const [selectedLang, setSelectedLang] = useState('en');
     const [projects, setProjects] = useState([]);
     const [formData, setFormData] = useState({
         title: '',
@@ -23,19 +25,29 @@ const Admin = () => {
         photo_url: '',
         skills: []
     });
+
+    // State for translations editing
+    const [pageTranslations, setPageTranslations] = useState({});
+
     const [editingId, setEditingId] = useState(null);
     const navigate = useNavigate();
-    const { t } = useLanguage();
+    const { t, translations, fetchTranslations } = useLanguage();
 
     useEffect(() => {
-        const token = sessionStorage.getItem('token');
-        if (!token) {
-            navigate('/login');
-            return;
+        // Initialize page translations when context or lang changes
+        if (translations && translations[selectedLang]) {
+            setPageTranslations({
+                'hero.badge': translations[selectedLang]?.hero?.badge || '',
+                'hero.titleStart': translations[selectedLang]?.hero?.titleStart || '',
+                'hero.titleEnd': translations[selectedLang]?.hero?.titleEnd || '',
+                'hero.description': translations[selectedLang]?.hero?.description || '',
+                'hero.viewWork': translations[selectedLang]?.hero?.viewWork || '',
+                'hero.contactMe': translations[selectedLang]?.hero?.contactMe || '',
+                'contact.title': translations[selectedLang]?.contact?.title || '',
+                'contact.subtitle': translations[selectedLang]?.contact?.subtitle || '',
+            });
         }
-        fetchProjects();
-        fetchCV();
-    }, [navigate]);
+    }, [translations, selectedLang]);
 
     const fetchCV = async () => {
         try {
@@ -54,6 +66,16 @@ const Admin = () => {
             console.error("Failed to fetch projects", error);
         }
     };
+
+    useEffect(() => {
+        const token = sessionStorage.getItem('token');
+        if (!token) {
+            navigate('/login');
+            return;
+        }
+        fetchProjects();
+        fetchCV();
+    }, [navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -134,6 +156,18 @@ const Admin = () => {
         setCvData({ ...cvData, skills: newSkills });
     };
 
+    const handleTranslationsSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            await updateTranslations(selectedLang, pageTranslations);
+            alert("Translations updated successfully!");
+            await fetchTranslations(); // Refresh context
+        } catch (error) {
+            console.error("Failed to update translations", error);
+            alert("Failed to update translations");
+        }
+    };
+
     return (
         <div className="container mx-auto px-6 py-12">
             <div className="flex justify-between items-center mb-10">
@@ -166,6 +200,12 @@ const Admin = () => {
                         className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === 'cv' ? 'border-blue-500 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}`}
                     >
                         CV
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('pages')}
+                        className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === 'pages' ? 'border-blue-500 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}`}
+                    >
+                        Page Management
                     </button>
                 </nav>
             </div>
@@ -280,7 +320,7 @@ const Admin = () => {
                         </div>
                     </div>
                 </div>
-            ) : (
+            ) : activeTab === 'cv' ? (
                 <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-xl max-w-4xl">
                     <h2 className="text-2xl font-bold mb-8 text-slate-900 border-b border-slate-100 pb-4">Edit CV</h2>
                     <form onSubmit={handleCVSubmit} className="space-y-8">
@@ -408,7 +448,123 @@ const Admin = () => {
                         </button>
                     </form>
                 </div>
-            )}
+            ) : activeTab === 'pages' ? (
+                <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-xl max-w-4xl">
+                    <div className="flex justify-between items-center mb-8 border-b border-slate-100 pb-4">
+                        <h2 className="text-2xl font-bold text-slate-900">Edit Page Texts</h2>
+                        <div className="flex items-center space-x-3 bg-slate-50 p-2 rounded-lg border border-slate-200">
+                            <span className="text-sm font-semibold text-slate-600">Language:</span>
+                            <div className="flex space-x-2">
+                                {['en', 'ru', 'et'].map(lang => (
+                                    <button
+                                        key={lang}
+                                        type="button"
+                                        onClick={() => setSelectedLang(lang)}
+                                        className={`px-4 py-1.5 rounded-md text-sm font-bold uppercase transition-all ${selectedLang === lang ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-500 hover:bg-slate-100 border border-slate-200'}`}
+                                    >
+                                        {lang}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                    <form onSubmit={handleTranslationsSubmit} className="space-y-8">
+
+                        <div className="space-y-6">
+                            <h3 className="text-lg font-bold text-slate-800 bg-slate-50 p-3 rounded-lg border border-slate-200">Hero Section</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-1">Badge Text</label>
+                                    <input
+                                        type="text"
+                                        value={pageTranslations['hero.badge'] || ''}
+                                        onChange={e => setPageTranslations({ ...pageTranslations, 'hero.badge': e.target.value })}
+                                        className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-semibold text-slate-700 mb-1">Title Start</label>
+                                        <input
+                                            type="text"
+                                            value={pageTranslations['hero.titleStart'] || ''}
+                                            onChange={e => setPageTranslations({ ...pageTranslations, 'hero.titleStart': e.target.value })}
+                                            className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-semibold text-slate-700 mb-1">Title End</label>
+                                        <input
+                                            type="text"
+                                            value={pageTranslations['hero.titleEnd'] || ''}
+                                            onChange={e => setPageTranslations({ ...pageTranslations, 'hero.titleEnd': e.target.value })}
+                                            className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-semibold text-slate-700 mb-1">Description</label>
+                                    <textarea
+                                        value={pageTranslations['hero.description'] || ''}
+                                        onChange={e => setPageTranslations({ ...pageTranslations, 'hero.description': e.target.value })}
+                                        className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2 h-24 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-1">View Work Button</label>
+                                    <input
+                                        type="text"
+                                        value={pageTranslations['hero.viewWork'] || ''}
+                                        onChange={e => setPageTranslations({ ...pageTranslations, 'hero.viewWork': e.target.value })}
+                                        className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-1">Contact Me Button</label>
+                                    <input
+                                        type="text"
+                                        value={pageTranslations['hero.contactMe'] || ''}
+                                        onChange={e => setPageTranslations({ ...pageTranslations, 'hero.contactMe': e.target.value })}
+                                        className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="space-y-6">
+                            <h3 className="text-lg font-bold text-slate-800 bg-slate-50 p-3 rounded-lg border border-slate-200 mt-8">Contact Section</h3>
+                            <div className="grid grid-cols-1 gap-6">
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-1">Title</label>
+                                    <input
+                                        type="text"
+                                        value={pageTranslations['contact.title'] || ''}
+                                        onChange={e => setPageTranslations({ ...pageTranslations, 'contact.title': e.target.value })}
+                                        className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-1">Subtitle</label>
+                                    <textarea
+                                        value={pageTranslations['contact.subtitle'] || ''}
+                                        onChange={e => setPageTranslations({ ...pageTranslations, 'contact.subtitle': e.target.value })}
+                                        className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2 h-20 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <button
+                            type="submit"
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-xl transition-all shadow-xl hover:shadow-2xl shadow-blue-500/30 w-full text-lg mt-8"
+                        >
+                            Save {selectedLang.toUpperCase()} Translations
+                        </button>
+                    </form>
+                </div>
+            ) : null}
         </div>
     );
 };

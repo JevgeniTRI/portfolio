@@ -167,3 +167,12 @@ def read_cv(db: Session = Depends(get_db)):
 @app.put("/cv", response_model=schemas.CV)
 def update_cv(cv: schemas.CVCreate, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     return crud.update_cv(db=db, cv=cv)
+
+@app.get("/translations", response_model=List[schemas.Translation])
+def read_translations(db: Session = Depends(get_db)):
+    return crud.get_translations(db)
+
+@app.post("/translations")
+def update_translations(data: schemas.TranslationBulkUpdate, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
+    crud.upsert_translations(db=db, language=data.language, translations=data.translations)
+    return {"status": "ok"}
