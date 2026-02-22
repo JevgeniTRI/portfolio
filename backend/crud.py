@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Session
-import models, schemas
+
+import models
+import schemas
 
 def get_projects(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Project).offset(skip).limit(limit).all()
