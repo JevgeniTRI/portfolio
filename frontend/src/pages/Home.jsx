@@ -2,6 +2,9 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 
+import { FaReact, FaPython } from 'react-icons/fa';
+import { SiFastapi, SiJavascript, SiTailwindcss } from 'react-icons/si';
+
 const Home = () => {
     const { t } = useLanguage();
 
@@ -51,11 +54,26 @@ const Home = () => {
                 <div className="container mx-auto px-6 text-center">
                     <p className="text-slate-300 mb-8 uppercase tracking-widest text-xs font-bold">{t('techCheck')}</p>
                     <div className="flex flex-wrap justify-center gap-12 text-slate-400 font-medium text-xl">
-                        <span className="hover:text-blue-500 transition-colors cursor-default">React</span>
-                        <span className="hover:text-green-500 transition-colors cursor-default">FastAPI</span>
-                        <span className="hover:text-yellow-500 transition-colors cursor-default">Python</span>
-                        <span className="hover:text-yellow-400 transition-colors cursor-default">JavaScript</span>
-                        <span className="hover:text-cyan-400 transition-colors cursor-default">TailwindCSS</span>
+                        <div className="flex flex-col items-center gap-3 transition-transform hover:scale-110 cursor-default group">
+                            <FaReact className="text-5xl text-[#61DAFB] drop-shadow-sm" />
+                            <span className="group-hover:text-slate-600 transition-colors">React</span>
+                        </div>
+                        <div className="flex flex-col items-center gap-3 transition-transform hover:scale-110 cursor-default group">
+                            <SiFastapi className="text-5xl text-[#009688] drop-shadow-sm" />
+                            <span className="group-hover:text-slate-600 transition-colors">FastAPI</span>
+                        </div>
+                        <div className="flex flex-col items-center gap-3 transition-transform hover:scale-110 cursor-default group">
+                            <img src="/python-logo.svg" alt="Python" className="h-[48px] w-auto drop-shadow-sm" />
+                            <span className="group-hover:text-slate-600 transition-colors">Python</span>
+                        </div>
+                        <div className="flex flex-col items-center gap-3 transition-transform hover:scale-110 cursor-default group">
+                            <SiJavascript className="text-5xl text-[#F7DF1E] drop-shadow-sm" />
+                            <span className="group-hover:text-slate-600 transition-colors">JavaScript</span>
+                        </div>
+                        <div className="flex flex-col items-center gap-3 transition-transform hover:scale-110 cursor-default group">
+                            <SiTailwindcss className="text-5xl text-[#06B6D4] drop-shadow-sm" />
+                            <span className="group-hover:text-slate-600 transition-colors">TailwindCSS</span>
+                        </div>
                     </div>
                 </div>
             </section>

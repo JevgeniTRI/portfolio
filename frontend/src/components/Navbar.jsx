@@ -22,8 +22,8 @@ const Navbar = () => {
     return (
         <nav className="fixed top-0 left-0 w-full z-50 bg-white/90 backdrop-blur-sm border-b border-slate-100">
             <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-                <Link to="/" className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                    DevPortfolio
+                <Link to="/" className="flex items-center ml-4">
+                    <img src="/api/media/logo.png?v=2" alt="JW Logo" className="h-16 w-auto object-contain scale-[1.5]" />
                 </Link>
                 <div className="flex items-center space-x-8">
                     {/* Desktop Nav */}
