@@ -12,8 +12,8 @@ const Admin = () => {
     const [selectedLang, setSelectedLang] = useState('en');
     const [projects, setProjects] = useState([]);
     const [formData, setFormData] = useState({
-        title: '',
-        description: '',
+        title: { en: '', ru: '', et: '' },
+        description: { en: '', ru: '', et: '' },
         github_link: '',
         images: [],
         tags: ''
@@ -90,7 +90,7 @@ const Admin = () => {
                 await createProject(projectData);
             }
 
-            setFormData({ title: '', description: '', github_link: '', images: [], tags: '' });
+            setFormData({ title: { en: '', ru: '', et: '' }, description: { en: '', ru: '', et: '' }, github_link: '', images: [], tags: '' });
             fetchProjects();
         } catch (error) {
             console.error("Failed to save project", error);
@@ -101,8 +101,8 @@ const Admin = () => {
     const handleEdit = (project) => {
         setEditingId(project.id);
         setFormData({
-            title: project.title,
-            description: project.description,
+            title: project.title || { en: '', ru: '', et: '' },
+            description: project.description || { en: '', ru: '', et: '' },
             github_link: project.github_link || '',
             images: project.images || [],
             tags: project.tags ? project.tags.join(', ') : ''
@@ -112,7 +112,7 @@ const Admin = () => {
 
     const handleCancelEdit = () => {
         setEditingId(null);
-        setFormData({ title: '', description: '', github_link: '', images: [], tags: '' });
+        setFormData({ title: { en: '', ru: '', et: '' }, description: { en: '', ru: '', et: '' }, github_link: '', images: [], tags: '' });
     };
 
     const handleDelete = async (id) => {
@@ -218,32 +218,46 @@ const Admin = () => {
                             <h2 className="text-2xl font-bold text-slate-900">
                                 {editingId ? t('admin.editProject') : t('admin.addProject')}
                             </h2>
-                            {editingId && (
-                                <button
-                                    onClick={handleCancelEdit}
-                                    className="text-sm text-slate-500 hover:text-slate-700 underline"
-                                >
-                                    {t('admin.cancel')}
-                                </button>
-                            )}
+                            <div className="flex items-center space-x-4">
+                                <div className="flex space-x-2 bg-slate-50 p-1.5 rounded-lg border border-slate-200">
+                                    {['en', 'ru', 'et'].map(lang => (
+                                        <button
+                                            key={lang}
+                                            type="button"
+                                            onClick={() => setSelectedLang(lang)}
+                                            className={`px-3 py-1 rounded-md text-xs font-bold uppercase transition-all ${selectedLang === lang ? 'bg-blue-600 text-white shadow-sm' : 'bg-transparent text-slate-500 hover:text-slate-700'}`}
+                                        >
+                                            {lang}
+                                        </button>
+                                    ))}
+                                </div>
+                                {editingId && (
+                                    <button
+                                        onClick={handleCancelEdit}
+                                        className="text-sm text-slate-500 hover:text-slate-700 underline"
+                                    >
+                                        {t('admin.cancel')}
+                                    </button>
+                                )}
+                            </div>
                         </div>
                         <form onSubmit={handleSubmit} className="space-y-5">
                             <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-1">{t('admin.form.title')}</label>
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">{t('admin.form.title')} ({selectedLang.toUpperCase()})</label>
                                 <input
                                     type="text"
-                                    value={formData.title}
-                                    onChange={e => setFormData({ ...formData, title: e.target.value })}
+                                    value={formData.title[selectedLang] || ''}
+                                    onChange={e => setFormData({ ...formData, title: { ...formData.title, [selectedLang]: e.target.value } })}
                                     required
                                     className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                     placeholder={t('admin.form.title')}
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-1">{t('admin.form.description')}</label>
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">{t('admin.form.description')} ({selectedLang.toUpperCase()})</label>
                                 <textarea
-                                    value={formData.description}
-                                    onChange={e => setFormData({ ...formData, description: e.target.value })}
+                                    value={formData.description[selectedLang] || ''}
+                                    onChange={e => setFormData({ ...formData, description: { ...formData.description, [selectedLang]: e.target.value } })}
                                     required
                                     className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-900 h-32 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
                                     placeholder={t('admin.form.description')}
@@ -293,8 +307,8 @@ const Admin = () => {
                             {projects.map(project => (
                                 <div key={project.id} className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 group hover:shadow-md transition-shadow">
                                     <div className="flex-1 min-w-0">
-                                        <h3 className="font-bold text-lg text-slate-900 truncate">{project.title}</h3>
-                                        <p className="text-slate-500 text-sm truncate">{project.description}</p>
+                                        <h3 className="font-bold text-lg text-slate-900 truncate">{project.title[selectedLang] || project.title['en'] || 'Untitled'}</h3>
+                                        <p className="text-slate-500 text-sm truncate">{project.description[selectedLang] || project.description['en'] || 'No description'}</p>
                                     </div>
                                     <div className="flex space-x-3 shrink-0">
                                         <button

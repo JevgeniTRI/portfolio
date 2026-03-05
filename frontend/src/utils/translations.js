@@ -36,7 +36,9 @@ export const translations = {
             noProjects: "No projects found yet.",
             sourceCode: "Source Code",
             viewDetails: "View Details",
-            delete: "Delete"
+            delete: "Delete",
+            backToProjects: "Back to Projects",
+            notFound: "Project not found"
         },
         footer: {
             rights: "All rights reserved."
@@ -114,7 +116,9 @@ export const translations = {
             noProjects: "Проектов пока нет.",
             sourceCode: "Исходный код",
             viewDetails: "Подробнее",
-            delete: "Удалить"
+            delete: "Удалить",
+            backToProjects: "Назад к проектам",
+            notFound: "Проект не найден"
         },
         footer: {
             rights: "Все права защищены."
@@ -192,7 +196,9 @@ export const translations = {
             noProjects: "Projekte veel pole.",
             sourceCode: "Lähtekood",
             viewDetails: "Vaata lähemalt",
-            delete: "Kustuta"
+            delete: "Kustuta",
+            backToProjects: "Tagasi projektide juurde",
+            notFound: "Projekti ei leitud"
         },
         footer: {
             rights: "Kõik õigused kaitstud."

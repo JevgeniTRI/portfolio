@@ -7,8 +7,8 @@ class ContactForm(BaseModel):
     message: str
 
 class ProjectBase(BaseModel):
-    title: str
-    description: str
+    title: dict
+    description: dict
     github_link: Optional[str] = None
     images: List[str] = Field(default_factory=list)
     tags: List[str] = Field(default_factory=list)

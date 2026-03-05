@@ -5,8 +5,8 @@ class Project(Base):
     __tablename__ = "projects"
 
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(255), index=True)
-    description = Column(Text)
+    title = Column(JSON, default=dict) # {"en": "Title", "ru": "Название", "et": "Pealkiri"}
+    description = Column(JSON, default=dict)
     github_link = Column(String(255))
 
     images = Column(JSON, default=list) # Storing list of image URLs
