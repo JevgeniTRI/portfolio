@@ -19,9 +19,9 @@ const Admin = () => {
         tags: ''
     });
     const [cvData, setCvData] = useState({
-        about: '',
-        experience: '',
-        education: '',
+        about: { en: '', ru: '', et: '' },
+        experience: { en: '', ru: '', et: '' },
+        education: { en: '', ru: '', et: '' },
         photo_url: '',
         skills: []
     });
@@ -52,7 +52,21 @@ const Admin = () => {
     const fetchCV = async () => {
         try {
             const data = await getCV();
-            setCvData(data);
+            const robustDict = (field) => {
+                if (!field) return { en: '', ru: '', et: '' };
+                if (typeof field === 'string') return { en: field, ru: field, et: field };
+                return field;
+            };
+            setCvData({
+                ...data,
+                about: robustDict(data.about),
+                experience: robustDict(data.experience),
+                education: robustDict(data.education),
+                skills: (data.skills || []).map(skill => ({
+                    ...skill,
+                    description: robustDict(skill.description)
+                }))
+            });
         } catch (error) {
             console.error("Failed to fetch CV", error);
         }
@@ -141,7 +155,7 @@ const Admin = () => {
     const addSkill = () => {
         setCvData({
             ...cvData,
-            skills: [...cvData.skills, { name: '', level: 'Beginner', certificate_url: '', description: '' }]
+            skills: [...cvData.skills, { name: '', level: 'Beginner', certificate_url: '', description: { en: '', ru: '', et: '' } }]
         });
     };
 
@@ -350,10 +364,17 @@ const Admin = () => {
                             </div>
                             <div className="md:col-span-2 space-y-6">
                                 <div>
-                                    <label className="block text-sm font-semibold text-slate-700 mb-1">About</label>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-1 flex items-center justify-between">
+                                        <span>About ({selectedLang.toUpperCase()})</span>
+                                        <div className="flex space-x-2 bg-slate-100 p-1 rounded">
+                                            {['en', 'ru', 'et'].map(l => (
+                                                <button key={l} type="button" onClick={() => setSelectedLang(l)} className={`text-xs px-2 py-0.5 rounded ${selectedLang === l ? 'bg-blue-600 text-white' : ''}`}>{l.toUpperCase()}</button>
+                                            ))}
+                                        </div>
+                                    </label>
                                     <textarea
-                                        value={cvData.about}
-                                        onChange={e => setCvData({ ...cvData, about: e.target.value })}
+                                        value={cvData.about[selectedLang] || ''}
+                                        onChange={e => setCvData({ ...cvData, about: { ...cvData.about, [selectedLang]: e.target.value } })}
                                         className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-900 h-32 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                                     />
                                 </div>
@@ -361,18 +382,18 @@ const Admin = () => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-1">Experience</label>
+                            <label className="block text-sm font-semibold text-slate-700 mb-1">Experience ({selectedLang.toUpperCase()})</label>
                             <textarea
-                                value={cvData.experience}
-                                onChange={e => setCvData({ ...cvData, experience: e.target.value })}
+                                value={cvData.experience[selectedLang] || ''}
+                                onChange={e => setCvData({ ...cvData, experience: { ...cvData.experience, [selectedLang]: e.target.value } })}
                                 className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-900 h-40 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-1">Education</label>
+                            <label className="block text-sm font-semibold text-slate-700 mb-1">Education ({selectedLang.toUpperCase()})</label>
                             <textarea
-                                value={cvData.education}
-                                onChange={e => setCvData({ ...cvData, education: e.target.value })}
+                                value={cvData.education[selectedLang] || ''}
+                                onChange={e => setCvData({ ...cvData, education: { ...cvData.education, [selectedLang]: e.target.value } })}
                                 className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-900 h-32 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                             />
                         </div>
@@ -436,10 +457,12 @@ const Admin = () => {
                                             </div>
                                         </div>
                                         <div className="md:col-span-12">
-                                            <label className="block text-xs font-semibold text-slate-500 mb-1">Description (Optional)</label>
+                                            <label className="block text-xs font-semibold text-slate-500 mb-1 flex justify-between">
+                                                <span>Description ({selectedLang.toUpperCase()}) (Optional)</span>
+                                            </label>
                                             <textarea
-                                                value={skill.description || ''}
-                                                onChange={e => updateSkill(index, 'description', e.target.value)}
+                                                value={(skill.description && skill.description[selectedLang]) || ''}
+                                                onChange={e => updateSkill(index, 'description', { ...(skill.description || {}), [selectedLang]: e.target.value })}
                                                 className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 h-20 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all resize-y"
                                                 placeholder="Brief description of your real-world experience with this skill..."
                                             />

@@ -33,9 +33,9 @@ class User(BaseModel):
     username: str
 
 class CVBase(BaseModel):
-    about: str = ""
-    experience: str = ""
-    education: str = ""
+    about: dict = Field(default_factory=dict)
+    experience: dict = Field(default_factory=dict)
+    education: dict = Field(default_factory=dict)
     photo_url: str = ""
     skills: List[dict] = Field(default_factory=list)
 

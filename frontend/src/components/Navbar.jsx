@@ -13,6 +13,7 @@ const Navbar = () => {
             <Link to="/" className="text-slate-600 hover:text-blue-600 transition-colors font-medium" onClick={() => setMobileMenuOpen(false)}>{t('nav.home')}</Link>
             <Link to="/projects" className="text-slate-600 hover:text-blue-600 transition-colors font-medium" onClick={() => setMobileMenuOpen(false)}>{t('nav.projects')}</Link>
             <Link to="/cv" className="text-slate-600 hover:text-blue-600 transition-colors font-medium" onClick={() => setMobileMenuOpen(false)}>{t('nav.cv')}</Link>
+            <Link to="/contact" className="text-slate-600 hover:text-blue-600 transition-colors font-medium" onClick={() => setMobileMenuOpen(false)}>{t('nav.contact')}</Link>
             {hasToken && (
                 <Link to="/admin" className="text-slate-600 hover:text-blue-600 transition-colors font-medium" onClick={() => setMobileMenuOpen(false)}>{t('nav.admin')}</Link>
             )}

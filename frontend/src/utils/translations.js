@@ -29,6 +29,20 @@ export const translations = {
                 error: "Failed to send message. Please try again later."
             }
         },
+        cv: {
+            title: "Curriculum Vitae",
+            subtitle: "My professional journey, experience, and educational background.",
+            about: "About Me",
+            experience: "Experience",
+            education: "Education",
+            skillsTitle: "Skills & Certificates",
+            readMore: "Read More ↓",
+            showLess: "Show Less ↑",
+            readMoreModal: "Read More",
+            viewCertificate: "Certificate",
+            viewOfficialCertificate: "View Official Certificate",
+            failedLoad: "Failed to load CV."
+        },
         techCheck: "Technologies I Use",
         projects: {
             title: "My Projects",
@@ -109,6 +123,20 @@ export const translations = {
                 error: "Не удалось отправить сообщение. Пожалуйста, попробуйте позже."
             }
         },
+        cv: {
+            title: "Резюме",
+            subtitle: "Мой профессиональный путь, опыт и образование.",
+            about: "Обо мне",
+            experience: "Опыт работы",
+            education: "Образование",
+            skillsTitle: "Навыки и Сертификаты",
+            readMore: "Читать далее ↓",
+            showLess: "Свернуть ↑",
+            readMoreModal: "Подробнее",
+            viewCertificate: "Сертификат",
+            viewOfficialCertificate: "Официальный сертификат",
+            failedLoad: "Не удалось загрузить резюме."
+        },
         techCheck: "Технологии",
         projects: {
             title: "Мои Проекты",
@@ -188,6 +216,20 @@ export const translations = {
                 success: "Sõnum edukalt saadetud!",
                 error: "Sõnumi saatmine ebaõnnestus. Palun proovi hiljem uuesti."
             }
+        },
+        cv: {
+            title: "Curriculum Vitae",
+            subtitle: "Minu ametialane teekond, kogemus ja haridus.",
+            about: "Minust",
+            experience: "Kogemus",
+            education: "Haridus",
+            skillsTitle: "Oskused ja Sertifikaadid",
+            readMore: "Loe edasi ↓",
+            showLess: "Näita vähem ↑",
+            readMoreModal: "Loe edasi",
+            viewCertificate: "Sertifikaat",
+            viewOfficialCertificate: "Ametlik sertifikaat",
+            failedLoad: "CV laadimine ebaõnnestus."
         },
         techCheck: "Tehnoloogiad",
         projects: {

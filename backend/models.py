@@ -23,9 +23,9 @@ class CV(Base):
     __tablename__ = "cv"
 
     id = Column(Integer, primary_key=True, index=True)
-    about = Column(Text, default="")
-    experience = Column(Text, default="")
-    education = Column(Text, default="")
+    about = Column(JSON, default=dict)
+    experience = Column(JSON, default=dict)
+    education = Column(JSON, default=dict)
     photo_url = Column(String(255), default="")
     skills = Column(JSON, default=list)  # Storing skills as a list of dicts
 
